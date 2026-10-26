@@ -15,16 +15,7 @@ ORDER BY d.fecha DESC;
 
 
 -- 2. Declaraciones que requieren atención
-SELECT numero, fecha, regimen, esOrganiza las capturas de evidencia del Laboratorio 3 en este repositorio.
-
-1. Usa las capturas de pantalla de Supabase y n8n que acabo de adjuntar.
-2. Cópialas en la carpeta `evidencia/`. Créala si todavía no existe.
-3. Renómbralas con nombres claros:
-   - `consulta-01.png` hasta `consulta-08.png` para los resultados de las ocho consultas SQL.
-   - `workflow-n8n.png` para la vista completa del workflow.
-   - `prueba-agente.png` para la respuesta del agente.
-4. No edites las imágenes ni borres archivos existentes. Si no logras identificar alguna captura o falta una, no la inventes: dime cuál falta.
-5. Al terminar, muéstrame la lista de archivos que quedaron en `evidencia/` y confirma qué consultas quedaron respaldadas.tado
+SELECT numero, fecha, regimen, estado
 FROM declaracion
 WHERE estado IN ('Retenida', 'En revision', 'Rechazada')
 ORDER BY fecha;
@@ -63,15 +54,18 @@ WHERE dd.valor_declarado > 100
 ORDER BY dd.valor_declarado DESC;
 
 
--- 6. Unidades almacenadas en cada bodega
+-- 6. Existencias por bodega y unidad de medida
+-- No mezcla en una misma suma kilogramos, cajas, botellas u otras unidades.
 SELECT
     b.nombre AS bodega,
     b.ubicacion,
-    SUM(ib.cantidad) AS unidades_almacenadas
+    pr.unidad_medida,
+    SUM(ib.cantidad) AS cantidad_almacenada
 FROM inventario_bodega AS ib
 JOIN bodega AS b ON ib.id_bodega = b.id_bodega
-GROUP BY b.id_bodega, b.nombre, b.ubicacion
-ORDER BY unidades_almacenadas DESC;
+JOIN producto AS pr ON ib.id_producto = pr.id_producto
+GROUP BY b.id_bodega, b.nombre, b.ubicacion, pr.unidad_medida
+ORDER BY cantidad_almacenada DESC;
 
 
 -- 7. Inspecciones con su declaración y funcionario responsable
